@@ -1,0 +1,22 @@
+LINK TO VIDEO: https://youtu.be/q1wRxdssFks
+
+Explanation of React hooks implementation
+I used useState to store and update information.
+user: user was authenticated or not
+userAnswers :storing user answers and selections
+questions: storing returned quiz questions from gemini
+loading: for waiting for async stuff
+quizComplete :creattion of final results page
+
+
+useEffect was used for Firebase Auth state changes and fetching user data on when requested to load
+
+
+Discussion of challenges and solutions
+The major challenge I have encountered is working on sending the data to Gemini. I do not know much about how the structure the data to be sent as JSON and readable. I have used ChatGPT to troubleshoot this. I also encountered errors where there was just nothing showing up on the page. To debug this I made console log entries to make sure that data being received was coming in properly and not as null or undefined
+I have not yet figured out how to get the evidence/ justification portion into the result page. If I have time I would also work on adding a time filter. 
+
+
+Summary of progress
+I have so far made the pages for signin, home, journal, and quiz pages. When the user signs in they will be directed to a home page where they can either start the quiz or create a journal entry. The journal entries are stored in the firestore database under the user’s unique id value. The quiz app then pulls the data from the user database and then send that data Gemeni flash 1.5 AI API with a specific prompt. The AI creates a quiz question based on the data and then also generates 3 false questions. Next I will work on the results page and improve the UI of the Quiz page.
+
