@@ -1,0 +1,19 @@
+.quiz-container {
+
+    height: 100vh;
+}
+
+.quiz-button-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quiz-generate-button {
+    padding: 0.75rem;
+  font-size: 1.25rem;
+  border-radius: 5px;
+  color: rgb(255, 255, 255);
+  background-color: #131112;
+  
+}

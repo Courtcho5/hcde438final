@@ -1,0 +1,48 @@
+.home-container-name {
+    margin:2rem;
+    padding: 2rem;
+    background-color: #416165;
+    border-radius: 10px;
+    color: white;
+    font-size: 2rem;
+    
+}
+
+.home-container-dual {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    padding:2rem;
+}
+
+.home-container-right {
+  
+    background-color: #416165;
+    border-radius: 10px;
+    color: white;
+    font-size: 2rem;
+    width: 100%;
+    display: flex
+}
+.home-right-action {
+    display:flex;
+    background-color:blue;
+}
+
+.home-right-progress-bar{
+    background-color:blue;
+}
+
+.home-right-statistics{
+    color:blue;
+}
+
+.home-container-left {
+    
+    
+    background-color: #416165;
+    border-radius: 10px;
+    color: white;
+    font-size: 2rem;
+    width: 30%;
+}

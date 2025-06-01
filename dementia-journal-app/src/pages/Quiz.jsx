@@ -3,6 +3,7 @@ import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import Navbar from "../components/Navbar";
+import "./Quiz.css";
 
 
 function Quiz() {
@@ -12,6 +13,7 @@ function Quiz() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [quizComplete, setQuizComplete] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [difficulty, setDifficulty] = useState("easy");
 
   const GEMINI_API_URL =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
@@ -55,6 +57,15 @@ function Quiz() {
       const q = query(entriesRef, where("userId", "==", user.uid));
       const snapshot = await getDocs(q);
       const allText = snapshot.docs.map((doc) => doc.data().text).join("\n");
+      
+      const daysMap = {
+        easy: 0, medium: 7, hard: 30,
+      };
+
+      const daysAgo = daysMap[difficulty] ?? 0;
+      const cutoff = new Date();
+      cutoff.setHours(0,0,0,0)
+      cutoff.setDate(cutoff.getDate()-daysAgo);
 
       if (!allText.trim()) {
         alert("No journal entries found. Please write one first!");
@@ -133,13 +144,33 @@ Journal Entries:
   return (
     <div>
       <Navbar />
-      <h2>Memory Quiz</h2>
-
-      {!questions.length && (
-        <button onClick={handleGenerateQuiz} disabled={loading}>
-          {loading ? "Generating..." : "Generate Quiz from My Entries"}
-        </button>
-      )}
+      <div className = "quiz-container">
+        <div className="journal-title">
+          <h2>Memory Quiz</h2>
+          <p>Based on your past journal entries, Recollective will created a short quiz to help reinforce your memories. 
+            Each question is designed to test your recall of specific details from what you've written.
+            Take your time — this is all about keeping your mind sharp and reflecting on the moments that matter.</p>
+          <p>Choose your difficulty level</p>
+        <div className = "quiz-difficulty-selector">
+          <label>
+            Difficulty:
+            <select value = {difficulty} onChange = {(e) => setDifficulty(e.target.value)}>
+              <option value = "easy">Easy</option>
+              <option value = "medium">Medium</option>
+              <option value = "hard">Hard</option>
+            </select>
+          </label>
+        </div>
+        </div>
+      
+      <div className = "quiz-button-container">
+        {!questions.length && (
+          <button onClick={handleGenerateQuiz} className = "quiz-generate-button" disabled={loading}>
+            {loading ? "Generating..." : "Generate Quiz from My Entries"}
+          </button>
+        )}
+      </div>
+    </div>
 
       {questions.length > 0 && !quizComplete && (
         <div>
