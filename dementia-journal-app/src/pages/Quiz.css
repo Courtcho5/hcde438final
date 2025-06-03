@@ -1,16 +1,30 @@
 .quiz-container {
-
+    display:flex;
+    align-items: center;
+    flex-direction: column;
     height: 100vh;
 }
-
-.quiz-button-container{
+.quiz-title {
+    color:#131112 ;
     display: flex;
+    font-size: 2.5rem;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    margin: 2rem;
+    padding:2rem;    
 }
 
-.quiz-generate-button {
-    padding: 0.75rem;
+.quiz-explaination {
+  font-size: 1.5rem;
+}
+
+.quiz-text {
+    width: 1500px;
+    font-size: 2rem; 
+}
+
+.quiz-button {
+     padding: 0.75rem;
   font-size: 1.25rem;
   border-radius: 5px;
   color: rgb(255, 255, 255);

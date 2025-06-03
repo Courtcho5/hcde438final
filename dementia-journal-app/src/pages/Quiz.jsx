@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import Navbar from "../components/Navbar";
 import "./Quiz.css";
-
 
 function Quiz() {
   const [user, setUser] = useState(null);
@@ -14,6 +14,8 @@ function Quiz() {
   const [quizComplete, setQuizComplete] = useState(false);
   const [loading, setLoading] = useState(false);
   const [difficulty, setDifficulty] = useState("easy");
+  const [quizStarted, setQuizStarted] = useState(false);
+  const navigate = useNavigate();
 
   const GEMINI_API_URL =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
@@ -34,8 +36,7 @@ function Quiz() {
         .filter((line) => line.startsWith("-"))
         .map((opt) => opt.trim().slice(2));
       const correctLine = rest.find((line) => line.startsWith("Correct:")) || "";
-      const explanationLine =
-        rest.find((line) => line.startsWith("Justification:")) || "";
+      const sourceLine = rest.find((line) => line.startsWith("Source:")) || "";
 
       const correctIndex = "ABCD".indexOf(correctLine.replace("Correct:", "").trim());
 
@@ -43,7 +44,7 @@ function Quiz() {
         question: questionLine.trim(),
         options,
         correctIndex,
-        explanation: explanationLine.replace("Justification:", "").trim(),
+        explanation: sourceLine.replace("Source:", "").trim(),
       };
     });
   };
@@ -56,16 +57,23 @@ function Quiz() {
       const entriesRef = collection(db, "journalEntries");
       const q = query(entriesRef, where("userId", "==", user.uid));
       const snapshot = await getDocs(q);
-      const allText = snapshot.docs.map((doc) => doc.data().text).join("\n");
-      
-      const daysMap = {
-        easy: 0, medium: 7, hard: 30,
-      };
 
-      const daysAgo = daysMap[difficulty] ?? 0;
-      const cutoff = new Date();
-      cutoff.setHours(0,0,0,0)
-      cutoff.setDate(cutoff.getDate()-daysAgo);
+      const now = new Date();
+      let cutoff;
+      if (difficulty === "easy") {
+        cutoff = new Date(now.setHours(0, 0, 0, 0));
+      } else if (difficulty === "medium") {
+        cutoff = new Date(now.setDate(now.getDate() - 7));
+      } else {
+        cutoff = new Date(now.setDate(now.getDate() - 30));
+      }
+
+      const filteredDocs = snapshot.docs.filter((doc) => {
+        const entryDate = doc.data().createdAt?.toDate?.();
+        return entryDate && entryDate >= cutoff;
+      });
+
+      const allText = filteredDocs.map((doc) => doc.data().text).join("\n");
 
       if (!allText.trim()) {
         alert("No journal entries found. Please write one first!");
@@ -117,6 +125,7 @@ Journal Entries:
       setUserAnswers(Array(parsed.length).fill(null));
       setCurrentQuestion(0);
       setQuizComplete(false);
+      setQuizStarted(true);
     } catch (error) {
       console.error("Error generating quiz:", error);
       setQuestions([{ question: "Failed to generate questions." }]);
@@ -142,43 +151,45 @@ Journal Entries:
   if (!user) return <p>Loading user...</p>;
 
   return (
-    <div>
+    <div className="quiz-page">
       <Navbar />
-      <div className = "quiz-container">
-        <div className="journal-title">
-          <h2>Memory Quiz</h2>
-          <p>Based on your past journal entries, Recollective will created a short quiz to help reinforce your memories. 
-            Each question is designed to test your recall of specific details from what you've written.
-            Take your time — this is all about keeping your mind sharp and reflecting on the moments that matter.</p>
-          <p>Choose your difficulty level</p>
-        <div className = "quiz-difficulty-selector">
-          <label>
-            Difficulty:
-            <select value = {difficulty} onChange = {(e) => setDifficulty(e.target.value)}>
-              <option value = "easy">Easy</option>
-              <option value = "medium">Medium</option>
-              <option value = "hard">Hard</option>
+
+      {!quizStarted && (
+        <div className="quiz-container">
+          <div className="quiz-title">
+            <h2>Memory Quiz</h2>
+          </div>
+
+          <div className="quiz-settings">
+            <label htmlFor="difficulty">Choose Difficulty: </label>
+            <select
+              id="difficulty"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+            >
+              <option value="easy">Easy (Today)</option>
+              <option value="medium">Medium (Past Week)</option>
+              <option value="hard">Hard (Past Month)</option>
             </select>
-          </label>
-        </div>
-        </div>
-      
-      <div className = "quiz-button-container">
-        {!questions.length && (
-          <button onClick={handleGenerateQuiz} className = "quiz-generate-button" disabled={loading}>
+          </div>
+
+          <button
+            onClick={handleGenerateQuiz}
+            className="quiz-button"
+            disabled={loading}
+          >
             {loading ? "Generating..." : "Generate Quiz from My Entries"}
           </button>
-        )}
-      </div>
-    </div>
+        </div>
+      )}
 
-      {questions.length > 0 && !quizComplete && (
-        <div>
+      {quizStarted && !quizComplete && (
+        <div className="quiz-box">
           <h3>
             Question {currentQuestion + 1} of {questions.length}
           </h3>
-          <p>{questions[currentQuestion].question}</p>
-          <ul>
+          <p className="quiz-question">{questions[currentQuestion].question}</p>
+          <ul className="quiz-options">
             {questions[currentQuestion].options.map((option, i) => (
               <li key={i}>
                 <label>
@@ -194,15 +205,15 @@ Journal Entries:
               </li>
             ))}
           </ul>
-          <button onClick={handleNext}>Next</button>
+          <button onClick={handleNext} className="quiz-next">Next</button>
         </div>
       )}
 
       {quizComplete && (
-        <div>
+        <div className="quiz-complete">
           <h3>Quiz Complete 🎉</h3>
           {questions.map((q, i) => (
-            <div key={i} style={{ marginBottom: "1rem" }}>
+            <div key={i} className="quiz-result">
               <strong>Q{i + 1}: {q.question}</strong>
               <ul>
                 {q.options.map((opt, idx) => (
@@ -211,12 +222,11 @@ Journal Entries:
                       ? "✅"
                       : idx === userAnswers[i]
                       ? "❌"
-                      : "⬜"}{" "}
-                    {opt}
+                      : "⬜"} {opt}
                   </li>
                 ))}
               </ul>
-              <em>Explanation: {q.explanation}</em>
+              <em>Journal Evidence: {q.explanation}</em>
             </div>
           ))}
         </div>
