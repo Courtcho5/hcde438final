@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -15,7 +15,7 @@ function Quiz() {
   const [loading, setLoading] = useState(false);
   const [difficulty, setDifficulty] = useState("easy");
   const [quizStarted, setQuizStarted] = useState(false);
-  const navigate = useNavigate();
+
 
   const GEMINI_API_URL =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";

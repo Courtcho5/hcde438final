@@ -4,6 +4,32 @@
     flex-direction: column;
     height: 100vh;
 }
+
+.quiz-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  
+  align-items: top;      
+}
+
+.quiz-question {
+  display: flex;
+  background-color: antiquewhite;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  width: 100vh;
+  
+}
+
+.quiz-options {
+  display
+}
+
+
+
+
 .quiz-title {
     color:#131112 ;
     display: flex;
