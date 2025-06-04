@@ -2,7 +2,7 @@
     display:flex;
     align-items: center;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
 }
 .journal-title {
     color:#131112 ;
@@ -15,8 +15,10 @@
 }
 
 .journal-text {
-    width: 1500px;
+    width: 100%;
     font-size: 2rem; 
+    
+    
 }
 
 .journal-button {

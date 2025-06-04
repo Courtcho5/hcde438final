@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { addDoc,  serverTimestamp } from "firebase/firestore";
 import Navbar from "../components/Navbar";
 import "./Quiz.css";
 
@@ -140,13 +141,23 @@ Journal Entries:
     setUserAnswers(updated);
   };
 
-  const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-    } else {
-      setQuizComplete(true);
+  const handleNext = async () => {
+  if (currentQuestion < questions.length - 1) {
+    setCurrentQuestion(currentQuestion + 1);
+  } else {
+    setQuizComplete(true);
+    // Log the quiz attempt to Firestore
+    try {
+      await addDoc(collection(db, "quizAttempts"), {
+        userId: user.uid,
+        createdAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Failed to log quiz attempt:", error);
     }
-  };
+  }
+};
+
 
   if (!user) return <p>Loading user...</p>;
 
