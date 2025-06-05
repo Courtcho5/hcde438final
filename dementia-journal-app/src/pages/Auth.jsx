@@ -42,7 +42,7 @@ function Auth() {
     <div className="auth-card">
       <div className = "auth-logo-line">
         {/*<img src = "src\pages\logo.png" alt = "Logo" className = "auth-logo"/>*/}
-        <h2 className = "auth-brand-name">Recollective</h2>
+        <h2 className = "auth-brand-name">Rewind</h2>
 
       </div>
       
