@@ -1,8 +1,11 @@
 .quiz-container {
     display:flex;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
     height: 100vh;
+    padding-left: 10%;
+    padding-right:10%
 }
 
 .quiz-box {
@@ -12,20 +15,6 @@
   align-items: top;      
 }
 
-.quiz-question {
-  display: flex;
-  background-color: antiquewhite;
-  border-radius: 10px;
-  justify-content: center;
-  align-items: center;
-  font-size: 2rem;
-  width: 100vh;
-  
-}
-
-
-
-
 
 
 .quiz-title {
@@ -34,8 +23,16 @@
     font-size: 2.5rem;
     flex-direction: column;
     align-items: center;
-    margin: 2rem;
-    padding:2rem;    
+}
+
+.quiz-subtext {
+    color:#131112 ;
+    display: flex;
+    font-size: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    margin-bottom: 1.5;
 }
 
 .quiz-explaination {
@@ -54,4 +51,83 @@
   color: rgb(255, 255, 255);
   background-color: #131112;
   
+}
+
+.actquiz-container{
+  display:flex;
+  margin: 1rem;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  border-radius: 10px;
+  background-color: black;
+  gap: 1rem;
+}
+
+.actquiz-question-number-container {
+  background-color: rgb(255, 255, 255);
+  padding: 1rem;
+  border-radius: 10pt;
+  color: rgb(0, 0, 0);
+  width:90%;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.actquiz-question {
+   background-color: rgb(255, 255, 255);
+  padding: 1rem;
+  border-radius: 10pt;
+  color: rgb(0, 0, 0);
+  width:90%;
+  text-align: center;
+  font-size: 2rem;
+  
+}
+.option-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.option-box {
+  padding: 1.25rem;
+  background-color: #2e3b4e;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  font-size: 1.2rem;
+}
+
+.option-box:hover {
+  background-color: #3d4f66;
+}
+
+.option-box.selected {
+  border-color: #00bfff;
+  background-color: #1b2a3d;
+}
+
+
+.quiz-complete-title {
+  background-color: black;
+  border-radius: 10px;
+  text-align: center;
+  padding: .25rem;
+  margin : 1rem;
+  font-size: 2rem;
+  color: white;
+}
+.quiz-result {
+   background-color: black;
+  border-radius: 10px;
+  text-align: left;
+  padding: 1rem;
+  margin : 1rem;
+  font-size: 1rem;
+  color: white;
 }

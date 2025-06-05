@@ -85,7 +85,7 @@ function Quiz() {
       const prompt = `
 You're a memory recall assistant. Based on the journal entries below, generate 3 multiple-choice recall questions. Each question should:
 
-1. Be based only on content explicitly written in the journal.
+1. Be based only on content explicitly written in the journal. Do not use the language "journal writer" instead use "you
 2. Have exactly 4 answer options:
    - One correct answer
    - Three plausible but incorrect answers
@@ -146,7 +146,7 @@ Journal Entries:
     setCurrentQuestion(currentQuestion + 1);
   } else {
     setQuizComplete(true);
-    // Log the quiz attempt to Firestore
+    
     try {
       await addDoc(collection(db, "quizAttempts"), {
         userId: user.uid,
@@ -170,7 +170,18 @@ Journal Entries:
           <div className="quiz-title">
             <h2>Memory Quiz</h2>
           </div>
-
+          <div className = "quiz-subtext">
+            
+              <p>
+                After you write a short journal entry about your day, Rewind will ask you a few <strong>multiple choice questions</strong> based on what you wrote.
+           
+                You simply <strong>choose the answer that matches what you wrote</strong>. There’s no pressure, it’s just a fun and gentle way to help your brain practice remembering.
+              
+                Doing this each day helps keep your memory strong and your mind active its like a small brain workout, made just for you.
+              </p>
+              <p> Ready to start? </p>
+              <p> Select a difficulty below and click " Begin Quiz "</p>
+          </div>
           <div className="quiz-settings">
             <label htmlFor="difficulty">Choose Difficulty: </label>
             <select
@@ -189,59 +200,67 @@ Journal Entries:
             className="quiz-button"
             disabled={loading}
           >
-            {loading ? "Generating..." : "Generate Quiz from My Entries"}
+            {loading ? "Generating..." : "Begin Quiz"}
           </button>
         </div>
       )}
 
       {quizStarted && !quizComplete && (
-        <div className="quiz-box">
-          <h3>
-            Question {currentQuestion + 1} of {questions.length}
-          </h3>
-          <p className="quiz-question">{questions[currentQuestion].question}</p>
-          <ul className="quiz-options">
-            {questions[currentQuestion].options.map((option, i) => (
-              <li key={i}>
-                <label>
-                  <input
-                    type="radio"
-                    name="answer"
-                    value={i}
-                    checked={userAnswers[currentQuestion] === i}
-                    onChange={() => handleAnswerSelect(i)}
-                  />
+        <div className="actquiz-container">
+          <div className = "actquiz-question-number-container">
+             Question {currentQuestion + 1} of {questions.length}
+          </div>
+           
+          
+          <div className="actquiz-question">{questions[currentQuestion].question}</div>
+          
+            <div className="option-grid">
+              {questions[currentQuestion].options.map((option, i) => (
+                <div
+                  key={i}
+                  className={`option-box ${
+                    userAnswers[currentQuestion] === i ? "selected" : ""
+                  }`}
+                  onClick={() => handleAnswerSelect(i)}
+                >
                   {option}
-                </label>
-              </li>
-            ))}
-          </ul>
+                </div>
+              ))}
+            </div>
+
+          
           <button onClick={handleNext} className="quiz-next">Next</button>
         </div>
       )}
 
       {quizComplete && (
-        <div className="quiz-complete">
-          <h3>Quiz Complete 🎉</h3>
-          {questions.map((q, i) => (
-            <div key={i} className="quiz-result">
-              <strong>Q{i + 1}: {q.question}</strong>
-              <ul>
-                {q.options.map((opt, idx) => (
-                  <li key={idx}>
-                    {idx === q.correctIndex
-                      ? "✅"
-                      : idx === userAnswers[i]
-                      ? "❌"
-                      : "⬜"} {opt}
-                  </li>
-                ))}
-              </ul>
-              <em>Journal Evidence: {q.explanation}</em>
-            </div>
-          ))}
+  <>
+    <div className="quiz-complete-title">
+      <h3>Quiz Complete 🎉</h3>
+    </div>
+    <div className="quiz-complete-question">
+      {questions.map((q, i) => (
+        <div key={i} className="quiz-result">
+          <strong>Q{i + 1}: {q.question}</strong>
+          <ul>
+            {q.options.map((opt, idx) => (
+              <li key={idx}>
+                {idx === q.correctIndex
+                  ? "✅"
+                  : idx === userAnswers[i]
+                  ? "❌"
+                  : "⬜"}{" "}
+                {opt}
+              </li>
+            ))}
+          </ul>
+          <em>Journal Evidence: {q.explanation}</em>
         </div>
-      )}
+      ))}
+    </div>
+  </>
+)}
+
     </div>
   );
 }
