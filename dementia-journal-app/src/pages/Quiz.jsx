@@ -17,7 +17,7 @@ function Quiz() {
   const [difficulty, setDifficulty] = useState("easy");
   const [quizStarted, setQuizStarted] = useState(false);
 
-
+  //creates API linkage
   const GEMINI_API_URL =
     "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
   const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -28,7 +28,7 @@ function Quiz() {
     });
     return () => unsub();
   }, []);
-
+  // Takes Gemeni output and organizes it into question, answer, and explaination; aligns correct answer to index
   const parseQuestions = (rawText) => {
     const blocks = rawText.split("Q: ").slice(1);
     return blocks.map((block) => {
@@ -53,12 +53,12 @@ function Quiz() {
   const handleGenerateQuiz = async () => {
     if (!user) return;
     setLoading(true);
-
+    // Ensures that userId of user aligns with database 
     try {
       const entriesRef = collection(db, "journalEntries");
       const q = query(entriesRef, where("userId", "==", user.uid));
       const snapshot = await getDocs(q);
-
+      // Time since entry, difficulty generator
       const now = new Date();
       let cutoff;
       if (difficulty === "easy") {
@@ -68,12 +68,12 @@ function Quiz() {
       } else {
         cutoff = new Date(now.setDate(now.getDate() - 30));
       }
-
+      // Makes sure entries that are behind cutoff are exlcuded
       const filteredDocs = snapshot.docs.filter((doc) => {
         const entryDate = doc.data().createdAt?.toDate?.();
         return entryDate && entryDate >= cutoff;
       });
-
+      // Summarizes text to be sent to Gemini
       const allText = filteredDocs.map((doc) => doc.data().text).join("\n");
 
       if (!allText.trim()) {
@@ -81,7 +81,7 @@ function Quiz() {
         setLoading(false);
         return;
       }
-
+      //Gemini prompt
       const prompt = `
 You're a memory recall assistant. Based on the journal entries below, generate 3 multiple-choice recall questions. Each question should:
 
@@ -102,7 +102,7 @@ You're a memory recall assistant. Based on the journal entries below, generate 3
 Journal Entries:
 "${allText}"
 `;
-
+      //Gemini formating requirement
       const body = {
         contents: [
           {
@@ -118,7 +118,7 @@ Journal Entries:
         },
         body: JSON.stringify(body),
       });
-
+      //Checks each retunred string for values and returns null if not, and does not start quiz
       const data = await response.json();
       const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
       const parsed = parseQuestions(rawText);
@@ -134,13 +134,13 @@ Journal Entries:
       setLoading(false);
     }
   };
-
+  //Answer selection by user is evaluated by index
   const handleAnswerSelect = (index) => {
     const updated = [...userAnswers];
     updated[currentQuestion] = index;
     setUserAnswers(updated);
   };
-
+//Pushes to next question and resets to current
   const handleNext = async () => {
   if (currentQuestion < questions.length - 1) {
     setCurrentQuestion(currentQuestion + 1);

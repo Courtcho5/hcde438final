@@ -20,7 +20,7 @@ function Home() {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Check journal
+        // Checks if journal is done
         const entriesRef = collection(db, "journalEntries");
         const journalQuery = query(entriesRef, where("userId", "==", currUser.uid));
         const journalSnap = await getDocs(journalQuery);
@@ -30,7 +30,7 @@ function Home() {
         });
         setHasJournaledToday(journaledToday);
 
-        // Check quiz
+        // checks if quiz is done
         const quizRef = collection(db, "quizAttempts");
         const quizQuery = query(quizRef, where("userId", "==", currUser.uid));
         const quizSnap = await getDocs(quizQuery);

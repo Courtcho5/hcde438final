@@ -45,7 +45,7 @@ function Auth() {
         <h2 className = "auth-brand-name">Rewind</h2>
 
       </div>
-      
+{/*input spaces for log in and sign up*/}     
       <h2 className="auth-title">
         {isSignUp ? "Sign Up" : "Sign In"}
       </h2>

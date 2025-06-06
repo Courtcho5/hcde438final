@@ -21,7 +21,7 @@ function Journal() {
 
   const handleSave = async () => {
     if (!entry.trim()) return;
-
+    // adds timestamp to entry in database and saves entry
     try {
       await addDoc(collection(db, "journalEntries"), {
         text: entry,
